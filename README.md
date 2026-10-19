@@ -4,8 +4,7 @@ An [Effect](https://effect.website) service that exposes cryptographic
 primitives behind a single injectable `Crypto` interface.
 
 Depending on the interface instead of a concrete library makes your code easy
-to test (swap in a deterministic implementation) and easy to migrate (swap the
-underlying library without touching call sites).
+to migrate (swap the underlying library without touching call sites).
 
 ## Features
 
