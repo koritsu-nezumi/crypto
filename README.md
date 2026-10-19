@@ -21,20 +21,20 @@ to migrate (swap the underlying library without touching call sites).
 ## Usage
 
 ```ts
-import { Effect } from "effect";
+import { Effect, Redacted } from "effect";
 import { Crypto } from "...";
 
 export const program = Effect.gen(function* () {
   const crypto = yield* Crypto;
 
-  const key = crypto.randomBytes(32);
-  const nonce = crypto.randomBytes(24);
+  const key = Redacted.make(yield* crypto.randomBytes(32));
+  const nonce = yield* crypto.randomBytes(24);
   const cipher = crypto.xchacha20poly1305(key, nonce);
 
-  const plaintext = crypto.utf8.decode("hello");
-  const ciphertext = cipher.encrypt(plaintext);
+  const plaintext = Redacted.make(yield* crypto.utf8.decode("hello"));
+  const ciphertext = yield* cipher.encrypt(plaintext);
 
-  return crypto.utf8.encode(cipher.decrypt(ciphertext));
+  return yield* crypto.utf8.encode(Redacted.value(yield* cipher.decrypt(ciphertext)));
 });
 ```
 
@@ -45,5 +45,6 @@ import { Effect } from "effect";
 import { program } from "...";
 import { CryptoLayer } from "...";
 
-program.pipe(Effect.provide(CryptoLayer), Effect.runSync, console.log); // "hello"
+const output = await program.pipe(Effect.provide(CryptoLayer), Effect.runPromise);
+console.log(output); // "hello"
 ```
