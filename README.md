@@ -25,7 +25,7 @@ underlying library without touching call sites).
 import { Effect } from "effect";
 import { Crypto } from "...";
 
-const program = Effect.gen(function* () {
+export const program = Effect.gen(function* () {
   const crypto = yield* Crypto;
 
   const key = crypto.randomBytes(32);
@@ -35,12 +35,15 @@ const program = Effect.gen(function* () {
   const plaintext = crypto.utf8.decode("hello");
   const ciphertext = cipher.encrypt(plaintext);
 
-  return crypto.utf8.encode(cipher.decrypt(ciphertext)); // "hello"
+  return crypto.utf8.encode(cipher.decrypt(ciphertext));
 });
 ```
 
 Provide an implementation when running the program:
 
 ```ts
-program.pipe(Effect.provide(CryptoLive), Effect.runSync);
+import { program } from "...";
+import { CryptoLayer } from "...";
+
+program.pipe(Effect.provide(CryptoLayer), Effect.runSync, console.log); // "hello"
 ```
