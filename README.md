@@ -42,6 +42,7 @@ export const program = Effect.gen(function* () {
 Provide an implementation when running the program:
 
 ```ts
+import { Effect } from "effect";
 import { program } from "...";
 import { CryptoLayer } from "...";
 
